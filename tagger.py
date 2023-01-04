@@ -15,14 +15,16 @@ class Tagger:
     
     def get_resources(self):
         """Get list of all resources"""
-        response = self.client.get_resources(ResourcesPerPage=100)
-        self.resources = response["ResourceTagMappingList"]
-        while response["PaginationToken"]:
+        pagination_token = ""
+        while True:
             response = self.client.get_resources(
                 ResourcesPerPage=100,
                 PaginationToken=response["PaginationToken"]
             )
+            pagination_token = response["PaginationToken"]
             self.resources += response["ResourceTagMappingList"]
+            if not pagination_token:
+                break
 
     def tag_resources(self):
         """Tag resources in chunks of 20"""
